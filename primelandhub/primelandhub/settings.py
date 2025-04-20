@@ -75,7 +75,7 @@ TEMPLATES = [
 ]
 
 # WSGI_APPLICATION = 'primelandhub.wsgi.application'
-ASGI_APPLICATION = "primelandhub.asgi.application"
+ASGI_APPLICATION = "primelandhub.primelandhub.asgi.application"
 
 
 # Database
