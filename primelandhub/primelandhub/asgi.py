@@ -2,6 +2,7 @@ import os
 from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
+import importlib
 
 # Set DJANGO_SETTINGS_MODULE before any Django imports
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'primelandhub.primelandhub.settings')
@@ -9,14 +10,16 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'primelandhub.primelandhub.setti
 # Initialize Django ASGI application early
 django_asgi_app = get_asgi_application()
 
-# Import routing after Django is initialized
-from landhub import routing
+# Lazy import of routing to avoid early model imports
+def get_websocket_urlpatterns():
+    routing = importlib.import_module('landhub.routing')
+    return routing.websocket_urlpatterns
 
 application = ProtocolTypeRouter({
     'http': django_asgi_app,
     'websocket': AuthMiddlewareStack(
         URLRouter(
-            routing.websocket_urlpatterns
+            get_websocket_urlpatterns()
         )
     ),
 })
